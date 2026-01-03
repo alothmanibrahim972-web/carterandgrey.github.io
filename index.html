@@ -22,9 +22,39 @@
       height: 100%;
       border: none;
     }
+    .fullscreen-btn {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      border: 2px solid white;
+      padding: 10px 15px;
+      font-size: 14px;
+      cursor: pointer;
+      border-radius: 5px;
+      z-index: 1000;
+      transition: background 0.3s;
+    }
+    .fullscreen-btn:hover {
+      background: rgba(0, 0, 0, 0.8);
+    }
   </style>
 </head> 
 <body> 
-  <iframe src="https://player.vimeo.com/video/1151255813?autoplay=1&loop=1&background=1&controls=0&title=0&byline=0&portrait=0" allow="autoplay; fullscreen" allowfullscreen></iframe>
+  <iframe id="videoFrame" src="https://player.vimeo.com/video/1151255813?autoplay=1&loop=1&background=1&controls=0&title=0&byline=0&portrait=0" allow="autoplay; fullscreen" allowfullscreen></iframe>
+  <button class="fullscreen-btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+  <script>
+    function toggleFullscreen() {
+      const elem = document.documentElement;
+      if (!document.fullscreenElement) {
+        elem.requestFullscreen().catch(err => {
+          console.log('Fullscreen error:', err);
+        });
+      } else {
+        document.exitFullscreen();
+      }
+    }
+  </script>
 </body> 
 </html>
