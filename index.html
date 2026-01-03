@@ -46,7 +46,7 @@
   </style>
 </head> 
 <body> 
-  <iframe id="videoFrame" src="https://player.vimeo.com/video/1151255813?autoplay=1&loop=1&background=1&controls=0&title=0&byline=0&portrait=0" allow="autoplay; fullscreen" allowfullscreen></iframe>
+  <iframe id="videoFrame" src="https://player.vimeo.com/video/1151255813?autoplay=1&loop=1&muted=1&background=1&controls=0&title=0&byline=0&portrait=0" allow="autoplay; fullscreen" allowfullscreen></iframe>
   <button class="fullscreen-btn" id="fsBtn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
   <script>
     let hideTimeout;
@@ -67,7 +67,7 @@
     document.addEventListener('fullscreenchange', () => {
       if (document.fullscreenElement) {
         btn.textContent = '✕ Exit Fullscreen';
-        hideButton();
+        startAutoHide();
       } else {
         btn.textContent = '⛶ Fullscreen';
         btn.classList.remove('hidden');
@@ -75,18 +75,20 @@
       }
     });
     
-    function hideButton() {
+    function startAutoHide() {
       clearTimeout(hideTimeout);
+      btn.classList.remove('hidden');
       hideTimeout = setTimeout(() => {
-        btn.classList.add('hidden');
+        if (document.fullscreenElement) {
+          btn.classList.add('hidden');
+        }
       }, 2000);
     }
     
-    // Show button on mouse move in fullscreen
+    // Show button on mouse move
     document.addEventListener('mousemove', () => {
       if (document.fullscreenElement) {
-        btn.classList.remove('hidden');
-        hideButton();
+        startAutoHide();
       }
     });
   </script>
