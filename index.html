@@ -51,6 +51,17 @@
   <script>
     let hideTimeout;
     const btn = document.getElementById('fsBtn');
+    const videoFrame = document.getElementById('videoFrame');
+    let soundEnabled = false;
+    
+    // Enable sound on first user interaction
+    document.addEventListener('click', function enableSound() {
+      if (!soundEnabled) {
+        const currentSrc = videoFrame.src;
+        videoFrame.src = currentSrc.replace('muted=1', 'muted=0');
+        soundEnabled = true;
+      }
+    }, { once: false });
     
     function toggleFullscreen() {
       const elem = document.documentElement;
@@ -63,7 +74,6 @@
       }
     }
     
-    // Update button text and handle hiding
     document.addEventListener('fullscreenchange', () => {
       if (document.fullscreenElement) {
         btn.textContent = '✕ Exit Fullscreen';
@@ -85,7 +95,6 @@
       }, 2000);
     }
     
-    // Show button on mouse move
     document.addEventListener('mousemove', () => {
       if (document.fullscreenElement) {
         startAutoHide();
