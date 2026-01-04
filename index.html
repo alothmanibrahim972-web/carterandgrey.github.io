@@ -34,14 +34,10 @@
       cursor: pointer;
       border-radius: 4px;
       z-index: 1000;
-      transition: opacity 0.3s, background 0.3s;
+      transition: background 0.3s;
     }
     .fullscreen-btn:hover {
       background: rgba(0, 0, 0, 0.8);
-    }
-    .fullscreen-btn.hidden {
-      opacity: 0;
-      pointer-events: none;
     }
     .sound-btn {
       position: fixed;
@@ -55,16 +51,13 @@
       cursor: pointer;
       border-radius: 4px;
       z-index: 1000;
-      transition: opacity 0.3s, background 0.3s;
+      transition: background 0.3s;
     }
     .sound-btn:hover {
       background: rgba(0, 0, 0, 0.8);
     }
-    .sound-btn.hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
   </style>
+  <script src="https://player.vimeo.com/api/player.js"></script>
 </head> 
 <body> 
   <iframe id="videoFrame" src="https://player.vimeo.com/video/1151255813?autoplay=1&loop=1&muted=1&background=1&controls=0&title=0&byline=0&portrait=0" allow="autoplay; fullscreen" allowfullscreen></iframe>
@@ -73,54 +66,56 @@
   <script>
     const btn = document.getElementById('fsBtn');
     const soundBtn = document.getElementById('soundBtn');
-    const videoFrame = document.getElementById('videoFrame');
+    const iframe = document.getElementById('videoFrame');
+    const player = new Vimeo.Player(iframe);
     let isMuted = true;
     
     function toggleSound() {
-      const currentSrc = videoFrame.src;
       if (isMuted) {
-        videoFrame.src = currentSrc.replace('muted=1', 'muted=0');
+        player.setVolume(1);
         soundBtn.textContent = '🔇 Mute';
         isMuted = false;
       } else {
-        videoFrame.src = currentSrc.replace('muted=0', 'muted=1');
+        player.setVolume(0);
         soundBtn.textContent = '🔊 Unmute';
         isMuted = true;
       }
     }
     
     function toggleFullscreen() {
-      // For mobile devices, try to make the iframe fullscreen
-      if (videoFrame.requestFullscreen) {
-        videoFrame.requestFullscreen();
-      } else if (videoFrame.webkitRequestFullscreen) {
-        videoFrame.webkitRequestFullscreen();
-      } else if (videoFrame.mozRequestFullScreen) {
-        videoFrame.mozRequestFullScreen();
-      } else if (videoFrame.msRequestFullscreen) {
-        videoFrame.msRequestFullscreen();
+      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        if (document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen();
+        } else if (document.documentElement.webkitRequestFullscreen) {
+          document.documentElement.webkitRequestFullscreen();
+        } else if (document.documentElement.mozRequestFullScreen) {
+          document.documentElement.mozRequestFullScreen();
+        } else if (document.documentElement.msRequestFullscreen) {
+          document.documentElement.msRequestFullscreen();
+        }
       } else {
-        // Fallback for desktop
-        document.documentElement.requestFullscreen();
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+          document.mozCancelFullScreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
+        }
       }
     }
     
-    document.addEventListener('fullscreenchange', () => {
-      if (document.fullscreenElement) {
-        btn.textContent = '✕ Exit Fullscreen';
-      } else {
-        btn.textContent = '⛶ Fullscreen';
-      }
-    });
+    document.addEventListener('fullscreenchange', updateFullscreenButton);
+    document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
     
-    // Also listen for webkit fullscreen change (Safari/iOS)
-    document.addEventListener('webkitfullscreenchange', () => {
-      if (document.webkitFullscreenElement) {
+    function updateFullscreenButton() {
+      if (document.fullscreenElement || document.webkitFullscreenElement) {
         btn.textContent = '✕ Exit Fullscreen';
       } else {
         btn.textContent = '⛶ Fullscreen';
       }
-    });
+    }
   </script>
 </body> 
 </html>
