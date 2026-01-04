@@ -71,7 +71,6 @@
   <button class="fullscreen-btn" id="fsBtn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
   <button class="sound-btn" id="soundBtn" onclick="toggleSound()">🔊 Unmute</button>
   <script>
-    let hideTimeout;
     const btn = document.getElementById('fsBtn');
     const soundBtn = document.getElementById('soundBtn');
     const videoFrame = document.getElementById('videoFrame');
@@ -109,12 +108,8 @@
     document.addEventListener('fullscreenchange', () => {
       if (document.fullscreenElement) {
         btn.textContent = '✕ Exit Fullscreen';
-        startAutoHide();
       } else {
         btn.textContent = '⛶ Fullscreen';
-        btn.classList.remove('hidden');
-        soundBtn.classList.remove('hidden');
-        clearTimeout(hideTimeout);
       }
     });
     
@@ -122,37 +117,8 @@
     document.addEventListener('webkitfullscreenchange', () => {
       if (document.webkitFullscreenElement) {
         btn.textContent = '✕ Exit Fullscreen';
-        startAutoHide();
       } else {
         btn.textContent = '⛶ Fullscreen';
-        btn.classList.remove('hidden');
-        soundBtn.classList.remove('hidden');
-        clearTimeout(hideTimeout);
-      }
-    });
-    
-    function startAutoHide() {
-      clearTimeout(hideTimeout);
-      btn.classList.remove('hidden');
-      soundBtn.classList.remove('hidden');
-      hideTimeout = setTimeout(() => {
-        if (document.fullscreenElement || document.webkitFullscreenElement) {
-          btn.classList.add('hidden');
-          soundBtn.classList.add('hidden');
-        }
-      }, 2000);
-    }
-    
-    document.addEventListener('mousemove', () => {
-      if (document.fullscreenElement || document.webkitFullscreenElement) {
-        startAutoHide();
-      }
-    });
-    
-    // Also handle touch for mobile
-    document.addEventListener('touchstart', () => {
-      if (document.fullscreenElement || document.webkitFullscreenElement) {
-        startAutoHide();
       }
     });
   </script>
