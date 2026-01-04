@@ -43,15 +43,52 @@
       opacity: 0;
       pointer-events: none;
     }
+    .sound-btn {
+      position: fixed;
+      bottom: 15px;
+      right: 15px;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      border: 1px solid white;
+      padding: 8px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      border-radius: 4px;
+      z-index: 1000;
+      transition: opacity 0.3s, background 0.3s;
+    }
+    .sound-btn:hover {
+      background: rgba(0, 0, 0, 0.8);
+    }
+    .sound-btn.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
   </style>
 </head> 
 <body> 
-  <iframe id="videoFrame" src="https://player.vimeo.com/video/1151255813?autoplay=1&loop=1&background=1&controls=0&title=0&byline=0&portrait=0" allow="autoplay; fullscreen" allowfullscreen></iframe>
+  <iframe id="videoFrame" src="https://player.vimeo.com/video/1151255813?autoplay=1&loop=1&muted=1&background=1&controls=0&title=0&byline=0&portrait=0" allow="autoplay; fullscreen" allowfullscreen></iframe>
   <button class="fullscreen-btn" id="fsBtn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+  <button class="sound-btn" id="soundBtn" onclick="toggleSound()">🔊 Unmute</button>
   <script>
     let hideTimeout;
     const btn = document.getElementById('fsBtn');
+    const soundBtn = document.getElementById('soundBtn');
     const videoFrame = document.getElementById('videoFrame');
+    let isMuted = true;
+    
+    function toggleSound() {
+      const currentSrc = videoFrame.src;
+      if (isMuted) {
+        videoFrame.src = currentSrc.replace('muted=1', 'muted=0');
+        soundBtn.textContent = '🔇 Mute';
+        isMuted = false;
+      } else {
+        videoFrame.src = currentSrc.replace('muted=0', 'muted=1');
+        soundBtn.textContent = '🔊 Unmute';
+        isMuted = true;
+      }
+    }
     
     function toggleFullscreen() {
       // For mobile devices, try to make the iframe fullscreen
@@ -76,6 +113,7 @@
       } else {
         btn.textContent = '⛶ Fullscreen';
         btn.classList.remove('hidden');
+        soundBtn.classList.remove('hidden');
         clearTimeout(hideTimeout);
       }
     });
@@ -88,6 +126,7 @@
       } else {
         btn.textContent = '⛶ Fullscreen';
         btn.classList.remove('hidden');
+        soundBtn.classList.remove('hidden');
         clearTimeout(hideTimeout);
       }
     });
@@ -95,9 +134,11 @@
     function startAutoHide() {
       clearTimeout(hideTimeout);
       btn.classList.remove('hidden');
+      soundBtn.classList.remove('hidden');
       hideTimeout = setTimeout(() => {
         if (document.fullscreenElement || document.webkitFullscreenElement) {
           btn.classList.add('hidden');
+          soundBtn.classList.add('hidden');
         }
       }, 2000);
     }
