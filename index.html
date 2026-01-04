@@ -46,31 +46,26 @@
   </style>
 </head> 
 <body> 
-  <iframe id="videoFrame" src="https://player.vimeo.com/video/1151255813?autoplay=1&loop=1&muted=1&background=1&controls=0&title=0&byline=0&portrait=0" allow="autoplay; fullscreen" allowfullscreen></iframe>
+  <iframe id="videoFrame" src="https://player.vimeo.com/video/1151255813?autoplay=1&loop=1&background=1&controls=0&title=0&byline=0&portrait=0" allow="autoplay; fullscreen" allowfullscreen></iframe>
   <button class="fullscreen-btn" id="fsBtn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
   <script>
     let hideTimeout;
     const btn = document.getElementById('fsBtn');
     const videoFrame = document.getElementById('videoFrame');
-    let soundEnabled = false;
-    
-    // Enable sound on first user interaction
-    document.addEventListener('click', function enableSound() {
-      if (!soundEnabled) {
-        const currentSrc = videoFrame.src;
-        videoFrame.src = currentSrc.replace('muted=1', 'muted=0');
-        soundEnabled = true;
-      }
-    }, { once: false });
     
     function toggleFullscreen() {
-      const elem = document.documentElement;
-      if (!document.fullscreenElement) {
-        elem.requestFullscreen().catch(err => {
-          console.log('Fullscreen error:', err);
-        });
+      // For mobile devices, try to make the iframe fullscreen
+      if (videoFrame.requestFullscreen) {
+        videoFrame.requestFullscreen();
+      } else if (videoFrame.webkitRequestFullscreen) {
+        videoFrame.webkitRequestFullscreen();
+      } else if (videoFrame.mozRequestFullScreen) {
+        videoFrame.mozRequestFullScreen();
+      } else if (videoFrame.msRequestFullscreen) {
+        videoFrame.msRequestFullscreen();
       } else {
-        document.exitFullscreen();
+        // Fallback for desktop
+        document.documentElement.requestFullscreen();
       }
     }
     
@@ -85,18 +80,37 @@
       }
     });
     
+    // Also listen for webkit fullscreen change (Safari/iOS)
+    document.addEventListener('webkitfullscreenchange', () => {
+      if (document.webkitFullscreenElement) {
+        btn.textContent = '✕ Exit Fullscreen';
+        startAutoHide();
+      } else {
+        btn.textContent = '⛶ Fullscreen';
+        btn.classList.remove('hidden');
+        clearTimeout(hideTimeout);
+      }
+    });
+    
     function startAutoHide() {
       clearTimeout(hideTimeout);
       btn.classList.remove('hidden');
       hideTimeout = setTimeout(() => {
-        if (document.fullscreenElement) {
+        if (document.fullscreenElement || document.webkitFullscreenElement) {
           btn.classList.add('hidden');
         }
       }, 2000);
     }
     
     document.addEventListener('mousemove', () => {
-      if (document.fullscreenElement) {
+      if (document.fullscreenElement || document.webkitFullscreenElement) {
+        startAutoHide();
+      }
+    });
+    
+    // Also handle touch for mobile
+    document.addEventListener('touchstart', () => {
+      if (document.fullscreenElement || document.webkitFullscreenElement) {
         startAutoHide();
       }
     });
