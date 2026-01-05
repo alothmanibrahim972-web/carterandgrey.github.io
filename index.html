@@ -60,25 +60,36 @@
   <script src="https://player.vimeo.com/api/player.js"></script>
 </head> 
 <body> 
-  <iframe id="videoFrame" src="https://player.vimeo.com/video/1151255813?autoplay=1&loop=1&muted=1&background=1&controls=0&title=0&byline=0&portrait=0" allow="autoplay; fullscreen" allowfullscreen></iframe>
+  <iframe id="videoFrame" src="https://player.vimeo.com/video/1151579886?autoplay=1&loop=1&muted=1&background=1&controls=0&title=0&byline=0&portrait=0" allow="autoplay; fullscreen" allowfullscreen></iframe>
   <button class="fullscreen-btn" id="fsBtn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
   <button class="sound-btn" id="soundBtn" onclick="toggleSound()">🔊 Unmute</button>
   <script>
     const btn = document.getElementById('fsBtn');
     const soundBtn = document.getElementById('soundBtn');
     const iframe = document.getElementById('videoFrame');
-    const player = new Vimeo.Player(iframe);
+    let player;
     let isMuted = true;
     
+    // Initialize Vimeo player when script loads
+    setTimeout(() => {
+      if (typeof Vimeo !== 'undefined') {
+        player = new Vimeo.Player(iframe);
+      }
+    }, 1000);
+    
     function toggleSound() {
-      if (isMuted) {
-        player.setVolume(1);
-        soundBtn.textContent = '🔇 Mute';
-        isMuted = false;
-      } else {
-        player.setVolume(0);
-        soundBtn.textContent = '🔊 Unmute';
-        isMuted = true;
+      if (player) {
+        if (isMuted) {
+          player.setVolume(1).then(() => {
+            soundBtn.textContent = '🔇 Mute';
+            isMuted = false;
+          }).catch(err => console.log('Volume error:', err));
+        } else {
+          player.setVolume(0).then(() => {
+            soundBtn.textContent = '🔊 Unmute';
+            isMuted = true;
+          }).catch(err => console.log('Volume error:', err));
+        }
       }
     }
     
@@ -88,20 +99,12 @@
           document.documentElement.requestFullscreen();
         } else if (document.documentElement.webkitRequestFullscreen) {
           document.documentElement.webkitRequestFullscreen();
-        } else if (document.documentElement.mozRequestFullScreen) {
-          document.documentElement.mozRequestFullScreen();
-        } else if (document.documentElement.msRequestFullscreen) {
-          document.documentElement.msRequestFullscreen();
         }
       } else {
         if (document.exitFullscreen) {
           document.exitFullscreen();
         } else if (document.webkitExitFullscreen) {
           document.webkitExitFullscreen();
-        } else if (document.mozCancelFullScreen) {
-          document.mozCancelFullScreen();
-        } else if (document.msExitFullscreen) {
-          document.msExitFullscreen();
         }
       }
     }
